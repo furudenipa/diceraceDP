@@ -27,7 +27,7 @@ func calcTicketValue(n, step, square int, state []int, stateValues *[numSteps][n
 	nextSquare := (square + n + 1) % numSquares
 
 	v += calcStateValue(step, nextSquare, state, stateValues)
-	v += float64(rewardsMap[nextSquare])
+	v += rewardsMap[nextSquare]
 	state[n]++
 	return v
 }
