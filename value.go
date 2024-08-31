@@ -12,21 +12,23 @@ func calcRollValue(
 	var sv float64
 	for i := 1; i <= 6; i++ {
 		nextSquare := (square + i) % numSquares
+		//fmt.Println(calcStateValue(step-1, nextSquare, state, stateValues))
 		sv += calcStateValue(step-1, nextSquare, state, stateValues)
 	}
 	v += sv
 	v += diceRewardsMap[square]
+
 	return v / 6
 }
 
 func calcTicketValue(n, step, square int, state []int, stateValues *[numSteps][numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64) float64 {
 	state[n]--
 	var v float64
-	nextSquare := (square + n) % numSquares
+	nextSquare := (square + n + 1) % numSquares
 
 	v += calcStateValue(step, nextSquare, state, stateValues)
 	v += float64(rewardsMap[nextSquare])
-
+	state[n]++
 	return v
 }
 
