@@ -33,9 +33,9 @@ func calcTicketValue(n, step, square int, state []int, stateValues *[numSteps][n
 func calcStateValue(step, nextSquare int, state []int, stateValues *[numSteps][numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64) float64 {
 
 	var sv float64
-	if nextSquare != advanceSixSquare || nextSquare != ticketSquare {
+	if nextSquare != advanceSixSquare && nextSquare != ticketSquare {
 		sv += stateValues[step][nextSquare][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]]
-	}else{
+	} else {
 		nextSquare = ticketSquare
 		var tmp float64
 		for ticketTpye := 0; ticketTpye < 6; ticketTpye++ {
