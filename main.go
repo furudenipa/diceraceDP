@@ -5,9 +5,12 @@ import (
 )
 
 func main() {
+	// show settings
 	var stateValues [numSteps][numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64
+	var policy [numSteps][numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]byte
 	for step := 0; step < numSteps; step++ {
-		for ticketSum := 0; ticketSum < (maxTickets-1)*6; ticketSum++ {
+		for ticketSum := 0; ticketSum <= (maxTickets-1)*6; ticketSum++ {
+			fmt.Println("step:", step, "ticketSum:", ticketSum)
 			combinations := [][]int{}
 			generateCombination(0, 0, ticketSum, []int{}, &combinations)
 			for _, state := range combinations {
@@ -19,12 +22,13 @@ func main() {
 						ticketValues[n] = calcTicketValue(n, step, square, state, &stateValues)
 					}
 				}
-				newValue := max(rollValue, ticketValues[0], ticketValues[1], ticketValues[2], ticketValues[3], ticketValues[4], ticketValues[5])
+				newValue, action := maxIndex(rollValue, ticketValues[0], ticketValues[1], ticketValues[2], ticketValues[3], ticketValues[4], ticketValues[5])
 				stateValues[step][0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = newValue
+				policy[step][0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = byte(action)
 			}
 
-			for _, state := range combinations{
-				for square:= 1; square <= numSquares; square++{
+			for _, state := range combinations {
+				for square := 1; square <= numSquares; square++ {
 
 					square := 0
 					rollValue := calcRollValue(step, square, state, &stateValues)
@@ -34,12 +38,37 @@ func main() {
 							ticketValues[n] = calcTicketValue(n, step, square, state, &stateValues)
 						}
 					}
-					newValue := max(rollValue, ticketValues[0], ticketValues[1], ticketValues[2], ticketValues[3], ticketValues[4], ticketValues[5])
+					newValue, action := maxIndex(rollValue, ticketValues[0], ticketValues[1], ticketValues[2], ticketValues[3], ticketValues[4], ticketValues[5])
 					stateValues[step][0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = newValue
-	
+					policy[step][0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = byte(action)
 				}
 			}
 		}
 		fmt.Println(step)
 	}
+
+	/*miniWriter()
+	fmt.Println("done")
+	*/
+	for i := 0; i < numSquares; i++ {
+		fmt.Printf("policy[0][%d][1][1][1][1][1][1] = %f\n", i, float64(policy[0][i][1][1][1][1][1][1]))
+	}
+}
+
+func maxIndex(values ...float64) (float64, int) {
+	if len(values) == 0 {
+		return 0, -1
+	}
+
+	maxValue := values[0]
+	maxIndex := 0
+
+	for i, value := range values {
+		if value > maxValue {
+			maxValue = value
+			maxIndex = i
+		}
+	}
+
+	return maxValue, maxIndex
 }
