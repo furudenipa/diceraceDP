@@ -10,49 +10,54 @@ func main() {
 	fmt.Println(" maxTickets: ", maxTickets)
 	fmt.Println(" numSteps:  ", numSteps)
 	fmt.Println("----------start----------")
-	var stateValues [numSteps][numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64
-	var policy [numSteps][numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]byte
+	var currentStateValues [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64
+	var prevStateValues [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64
+	var policy [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]byte
+
 	for step := 0; step < numSteps; step++ {
 		fmt.Println("step: ", step)
+
 		for ticketSum := 0; ticketSum <= (maxTickets-1)*6; ticketSum++ {
 			combinations := [][]int{}
 			generateCombination(0, 0, ticketSum, []int{}, &combinations)
 			for _, state := range combinations {
 				square := 0
-				rollValue := calcRollValue(step, square, state, &stateValues)
+				rollValue := calcRollValue(step, square, state, &prevStateValues)
 				var ticketValues [6]float64
 				for n := 0; n < 6; n++ {
 					if state[n] > 0 {
-						ticketValues[n] = calcTicketValue(n, step, square, state, &stateValues)
+						ticketValues[n] = calcTicketValue(n, square, state, &currentStateValues)
 					}
 				}
 				newValue, action := maxIndex(rollValue, ticketValues[0], ticketValues[1], ticketValues[2], ticketValues[3], ticketValues[4], ticketValues[5])
-				stateValues[step][0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = newValue
-				policy[step][0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = byte(action)
+				currentStateValues[0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = newValue
+				policy[0][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = byte(action)
 			}
 
 			for _, state := range combinations {
 				for square := 1; square < numSquares; square++ {
-					rollValue := calcRollValue(step, square, state, &stateValues)
+					rollValue := calcRollValue(step, square, state, &prevStateValues)
 					var ticketValues [6]float64
 					for n := 0; n < 6; n++ {
 						if state[n] > 0 {
-							ticketValues[n] = calcTicketValue(n, step, square, state, &stateValues)
+							ticketValues[n] = calcTicketValue(n, square, state, &currentStateValues)
 						}
 					}
 					newValue, action := maxIndex(rollValue, ticketValues[0], ticketValues[1], ticketValues[2], ticketValues[3], ticketValues[4], ticketValues[5])
-					stateValues[step][square][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = newValue
-					policy[step][square][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = byte(action)
+					currentStateValues[square][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = newValue
+					policy[square][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = byte(action)
 				}
 			}
 		}
+		for i := 0; i < 18; i++ {
+			fmt.Printf("currentStateValues[%d][0][0][1][0][0][0]: %f\n", i, currentStateValues[i][0][0][1][0][0][0])
+		}
+		fmt.Println("currentStateValues[0][1][0][1][0][1][0]: ", currentStateValues[0][1][0][1][0][1][0])
+		fmt.Println("currentStateValues[0][1][1][1][1][1][1]: ", currentStateValues[0][1][1][1][1][1][1])
+
+		prevStateValues = currentStateValues
 	}
 	fmt.Println("----------end----------")
-	for i := 0; i < numSquares; i++ {
-		fmt.Printf("policy[0][%d][1][1][1][1][1][1] = %f\n", i, float64(policy[0][i][1][1][1][1][1][1]))
-		fmt.Printf("stateValues[0][%d][1][1][1][1][1][1] = %f\n", i, stateValues[0][i][1][1][1][1][1][1])
-	}
-
 }
 
 func maxIndex(values ...float64) (float64, int) {
