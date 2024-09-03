@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -14,9 +17,16 @@ func main() {
 	var prevStateValues [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64
 	var policy [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]byte
 
+	file, err := os.Create("policy.bin")
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+	var buffer bytes.Buffer
+
 	for step := 0; step < numSteps; step++ {
 		fmt.Println("step: ", step)
-
 		for ticketSum := 0; ticketSum <= (maxTickets-1)*6; ticketSum++ {
 			combinations := [][]int{}
 			generateCombination(0, 0, ticketSum, []int{}, &combinations)
@@ -46,15 +56,37 @@ func main() {
 					newValue, action := maxIndex(rollValue, ticketValues[0], ticketValues[1], ticketValues[2], ticketValues[3], ticketValues[4], ticketValues[5])
 					currentStateValues[square][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = newValue
 					policy[square][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]] = byte(action)
+					/*if square == 9 && state[0] == 1 && state[1] == 1 && state[2] == 1 && state[3] == 1 && state[4] == 1 && state[5] == 1 {
+						fmt.Println("stateValues: ", currentStateValues[9][1][1][1][1][1][1], "policy: ", policy[9][1][1][1][1][1][1])
+						fmt.Println("rollValue: ", rollValue, "ticketValues: ", ticketValues)
+						fmt.Println("------------------------------------------")
+					}*/
 				}
 			}
 		}
-		for i := 0; i < 18; i++ {
-			fmt.Printf("currentStateValues[%d][0][0][1][0][0][0]: %f\n", i, currentStateValues[i][0][0][1][0][0][0])
-		}
-		fmt.Println("currentStateValues[0][1][0][1][0][1][0]: ", currentStateValues[0][1][0][1][0][1][0])
-		fmt.Println("currentStateValues[0][1][1][1][1][1][1]: ", currentStateValues[0][1][1][1][1][1][1])
 
+		for i := 0; i < numSquares; i++ {
+			for j := 0; j < maxTickets; j++ {
+				for k := 0; k < maxTickets; k++ {
+					for l := 0; l < maxTickets; l++ {
+						for m := 0; m < maxTickets; m++ {
+							err = binary.Write(&buffer, binary.LittleEndian, policy[i][j][k][l][m])
+							if err != nil {
+								fmt.Println("Error writing policy:", err)
+								return
+							}
+						}
+					}
+				}
+			}
+		}
+		if _, err := file.Write(buffer.Bytes()); err != nil {
+			fmt.Println("Error writing to file:", err)
+			return
+		}
+		buffer.Reset()
+
+		//fmt.Println("stateValues: ", currentStateValues[9][1][1][1][1][1][1], "policy: ", policy[9][1][1][1][1][1][1])
 		prevStateValues = currentStateValues
 	}
 	fmt.Println("----------end----------")
