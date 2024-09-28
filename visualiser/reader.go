@@ -1,9 +1,11 @@
-package main
+package visualiser
 
 import (
 	"io"
 	"log"
 	"os"
+
+	"github.com/furudenipa/diceraceDP/config"
 )
 
 func reader(filePath string) *[]byte {
@@ -22,7 +24,7 @@ func reader(filePath string) *[]byte {
 	}
 
 	// 期待されるデータサイズを計算
-	expectedSize := numSteps * numSquares * pow(maxTickets, 6)
+	expectedSize := config.NumSteps * config.NumSquares * pow(config.MaxTickets, 6)
 	if int64(expectedSize) != fileInfo.Size() {
 		log.Fatalf("ファイルサイズが期待されるサイズ (%d) と一致しません。実際のサイズ: %d", expectedSize, fileInfo.Size())
 	}

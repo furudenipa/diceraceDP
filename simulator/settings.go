@@ -1,9 +1,10 @@
-package main
+package simulator
 
+/*
 const (
-	numSquares       = 18
-	maxTickets       = 10
-	numSteps         = 100 //100
+	NumSquares       = 18
+	MaxTickets       = 10
+	NumSteps         = 100 //100
 	ticketSquare     = 0
 	advanceSixSquare = 12
 	STONE            = 4.3  // yellow
@@ -46,3 +47,4 @@ func init() {
 		diceRewardsMap[i] = float64(sum)
 	}
 }
+*/

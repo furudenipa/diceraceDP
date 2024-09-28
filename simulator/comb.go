@@ -1,4 +1,6 @@
-package main
+package simulator
+
+import "github.com/furudenipa/diceraceDP/config"
 
 func generateCombination(n, currentSum, targetSum int, currentTuple []int, results *[][]int) {
 	if n == 6 {
@@ -8,8 +10,8 @@ func generateCombination(n, currentSum, targetSum int, currentTuple []int, resul
 		return
 	}
 
-	start := max(0, targetSum-currentSum-(5-n)*(maxTickets-1))
-	end := min(maxTickets-1, targetSum-currentSum) + 1
+	start := max(0, targetSum-currentSum-(5-n)*(config.MaxTickets-1))
+	end := min(config.MaxTickets-1, targetSum-currentSum) + 1
 	for i := start; i < end; i++ {
 		currentTuple = append(currentTuple, i)
 		generateCombination(n+1, currentSum+i, targetSum, currentTuple, results)

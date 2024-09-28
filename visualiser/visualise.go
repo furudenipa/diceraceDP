@@ -1,12 +1,10 @@
-package main
+package visualiser
 
 import (
 	"github.com/gdamore/tcell/v2"
 )
 
-func main() {
-
-	filepath := "../data/policy.bin"
+func Run(filepath string) {
 
 	screen, err := tcell.NewScreen()
 	if err != nil {

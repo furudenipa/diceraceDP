@@ -1,21 +1,23 @@
-package main
+package simulator
 
 import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
 	"os"
+
+	"github.com/furudenipa/diceraceDP/config"
 )
 
-func main() {
+func Run() {
 	fmt.Println("Settings")
-	fmt.Println(" numSquares: ", numSquares)
-	fmt.Println(" maxTickets: ", maxTickets)
-	fmt.Println(" numSteps:  ", numSteps)
+	fmt.Println(" numSquares: ", config.NumSquares)
+	fmt.Println(" maxTickets: ", config.MaxTickets)
+	fmt.Println(" numSteps:  ", config.NumSteps)
 	fmt.Println("----------start----------")
-	var currentStateValues [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64
-	var prevStateValues [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]float64
-	var policy [numSquares][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets][maxTickets]byte
+	var currentStateValues [config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64
+	var prevStateValues [config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64
+	var policy [config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]byte
 
 	file, err := os.Create("policy.bin")
 	if err != nil {
@@ -25,9 +27,9 @@ func main() {
 	defer file.Close()
 	var buffer bytes.Buffer
 
-	for step := 0; step < numSteps; step++ {
+	for step := 0; step < config.NumSteps; step++ {
 		fmt.Println("step: ", step)
-		for ticketSum := 0; ticketSum <= (maxTickets-1)*6; ticketSum++ {
+		for ticketSum := 0; ticketSum <= (config.MaxTickets-1)*6; ticketSum++ {
 			combinations := [][]int{}
 			generateCombination(0, 0, ticketSum, []int{}, &combinations)
 
@@ -46,7 +48,7 @@ func main() {
 			}
 
 			for _, state := range combinations {
-				for square := 1; square < numSquares; square++ {
+				for square := 1; square < config.NumSquares; square++ {
 					rollValue := calcRollValue(step, square, state, &prevStateValues)
 					var ticketValues [6]float64
 					for n := 0; n < 6; n++ {
@@ -62,11 +64,11 @@ func main() {
 		}
 
 		// Write policy to file
-		for i := 0; i < numSquares; i++ {
-			for j := 0; j < maxTickets; j++ {
-				for k := 0; k < maxTickets; k++ {
-					for l := 0; l < maxTickets; l++ {
-						for m := 0; m < maxTickets; m++ {
+		for i := 0; i < config.NumSquares; i++ {
+			for j := 0; j < config.MaxTickets; j++ {
+				for k := 0; k < config.MaxTickets; k++ {
+					for l := 0; l < config.MaxTickets; l++ {
+						for m := 0; m < config.MaxTickets; m++ {
 							err = binary.Write(&buffer, binary.LittleEndian, policy[i][j][k][l][m])
 							if err != nil {
 								fmt.Println("Error writing policy:", err)

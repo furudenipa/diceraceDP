@@ -1,9 +1,10 @@
-package main
+package visualiser
 
 import (
 	"fmt"
 	"strconv"
 
+	"github.com/furudenipa/diceraceDP/config"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 )
@@ -46,6 +47,7 @@ func (app *App) show() {
 	s := app.screen
 	app.drawRow()
 	app.drawColumn()
+	app.drawLogo()
 	app.drawMatrix()
 	app.drawTickets()
 	s.Show()
@@ -57,9 +59,9 @@ func (app *App) drawMatrix() {
 	t1, t2, t3, t4, t5, t6 := app.ticketIndexs[0], app.ticketIndexs[1], app.ticketIndexs[2], app.ticketIndexs[3], app.ticketIndexs[4], app.ticketIndexs[5]
 
 	for step := 0; step < app.rowViewRange; step++ {
-		for square := 0; square < numSquares; square++ {
+		for square := 0; square < config.NumSquares; square++ {
 			var color tcell.Color
-			if step+app.rowIndex < numSteps {
+			if step+app.rowIndex < config.NumSteps {
 				idx := getFlatIndex(step+app.rowIndex, square, t1, t2, t3, t4, t5, t6, app.strides)
 				value := int(app.policy[idx] % 8)
 				color = Colors[value]
@@ -104,7 +106,7 @@ func (app *App) drawColumn() {
 	s := app.screen
 	y := appOffsetY - 1
 
-	for columnIndex := 0; columnIndex < numSquares; columnIndex++ {
+	for columnIndex := 0; columnIndex < config.NumSquares; columnIndex++ {
 		indexStr := fmt.Sprintf("%d", columnIndex)
 		startX := -(len(indexStr) + 1)
 		for j, char := range indexStr {
@@ -131,6 +133,12 @@ func (app *App) drawTickets() {
 	}
 }
 
+func (app *App) drawLogo() {
+	app.SetContents(2, 0, "Dice", tcell.StyleDefault.Foreground(tcell.ColorBlue))
+	app.SetContents(6, 0, "Race", tcell.StyleDefault.Foreground(tcell.ColorWhite))
+	app.SetContents(2, 1, "Visualiser", tcell.StyleDefault.Foreground(tcell.GetColor("#D0D0D0")))
+}
+
 func (app *App) showOffset() {
 	// offsetX - offsetY
 	_, maxY := app.screen.Size()
@@ -141,7 +149,7 @@ func (app *App) showOffset() {
 	}
 
 	// other - offsetY
-	for x := appOffsetX; x < 3*numSquares+appOffsetX; x++ {
+	for x := appOffsetX; x < 3*config.NumSquares+appOffsetX; x++ {
 		for y := 0; y < appOffsetY; y++ {
 			app.screen.SetContent(x, y, '/', nil, tcell.StyleDefault.Background(tcell.ColorRed))
 		}
@@ -164,7 +172,7 @@ func (app *App) drawSquare(x, y int, c tcell.Color) {
 
 func (app *App) incrementTicket(index int) {
 	app.ticketIndexs[index]++
-	if app.ticketIndexs[index] >= maxTickets {
+	if app.ticketIndexs[index] >= config.MaxTickets {
 		app.ticketIndexs[index] = 0
 	}
 }
@@ -172,14 +180,14 @@ func (app *App) incrementTicket(index int) {
 func (app *App) decrementTicket(index int) {
 	app.ticketIndexs[index]--
 	if app.ticketIndexs[index] < 0 {
-		app.ticketIndexs[index] = maxTickets - 1
+		app.ticketIndexs[index] = config.MaxTickets - 1
 	}
 }
 
 func (app *App) incrementRowIndex() {
 	app.rowIndex++
-	if app.rowIndex >= numSteps {
-		app.rowIndex = numSteps
+	if app.rowIndex >= config.NumSteps {
+		app.rowIndex = config.NumSteps
 	}
 }
 
