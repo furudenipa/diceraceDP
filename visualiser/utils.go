@@ -13,14 +13,9 @@ const (
 	numDimensions    = 8
 	numSquares       = 18
 	maxTickets       = 10
-	numSteps         = 100 //100
+	numSteps         = 100
 	ticketSquare     = 0
 	advanceSixSquare = 12
-	STONE            = 4.3  // yellow
-	CREDIT           = 13.5 // 100K
-	REPORT           = 4    // yellow
-	MIYU             = 0
-	ELEPH            = 50
 )
 
 func computeStrides() []int {

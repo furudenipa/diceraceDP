@@ -8,6 +8,17 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
+var Colors = []tcell.Color{
+	tcell.GetColor("#D0D0D0"), // roll
+	tcell.GetColor("#E14210"), // 1
+	tcell.GetColor("#E78A11"), // 2
+	tcell.GetColor("#70CF6F"), // 3
+	tcell.GetColor("#295EBE"), // 4
+	tcell.GetColor("#5A328E"), // 5
+	tcell.GetColor("#C33AA8"), // 6
+	tcell.ColorBlack,          // None
+}
+
 type App struct {
 	screen       tcell.Screen
 	policy       []byte
@@ -17,6 +28,7 @@ type App struct {
 	strides      []int
 }
 
+// loading画面の表示とデータの読み込み
 func (app *App) loading(filepath string) {
 	s := app.screen
 	s.Clear()
@@ -29,6 +41,7 @@ func (app *App) loading(filepath string) {
 	app.policy = *reader(filepath)
 }
 
+// 画面表示、クリア不要であること
 func (app *App) show() {
 	s := app.screen
 	app.drawRow()
@@ -39,16 +52,6 @@ func (app *App) show() {
 }
 
 func (app *App) drawMatrix() {
-	colors := []tcell.Color{
-		tcell.GetColor("#C0C0C0"), // roll
-		tcell.GetColor("#E14210"), // 1
-		tcell.GetColor("#E78A11"), // 2
-		tcell.GetColor("#70CF6F"), // 3
-		tcell.GetColor("#295EBE"), // 4
-		tcell.GetColor("#5A328E"), // 5
-		tcell.GetColor("#C33AA8"), // 6
-		tcell.ColorBlack,          // None
-	}
 
 	// 現在のt1〜t6の値を取得
 	t1, t2, t3, t4, t5, t6 := app.ticketIndexs[0], app.ticketIndexs[1], app.ticketIndexs[2], app.ticketIndexs[3], app.ticketIndexs[4], app.ticketIndexs[5]
@@ -59,14 +62,14 @@ func (app *App) drawMatrix() {
 			if step+app.rowIndex < numSteps {
 				idx := getFlatIndex(step+app.rowIndex, square, t1, t2, t3, t4, t5, t6, app.strides)
 				value := int(app.policy[idx] % 8)
-				color = colors[value]
+				color = Colors[value]
 			} else {
-				color = colors[7] //policyが計算されていない場合
+				color = Colors[7] //policyが計算されていない場合
 			}
 
-			if square == 12 {
+			/*if square == 12 {
 				color = colors[7]
-			}
+			}*/
 
 			// スクリーン上の位置を計算
 			x := appOffsetX + square*3
@@ -113,16 +116,6 @@ func (app *App) drawColumn() {
 }
 
 func (app *App) drawTickets() {
-	colors := []tcell.Color{
-		tcell.GetColor("#C0C0C0"), // roll
-		tcell.GetColor("#E14210"), // 1
-		tcell.GetColor("#E78A11"), // 2
-		tcell.GetColor("#70CF6F"), // 3
-		tcell.GetColor("#295EBE"), // 4
-		tcell.GetColor("#5A328E"), // 5
-		tcell.GetColor("#C33AA8"), // 6
-		tcell.ColorBlack,          // None
-	}
 
 	s := app.screen
 	offset := appOffsetX + 9
@@ -132,7 +125,7 @@ func (app *App) drawTickets() {
 		app.SetContents(x, 1, " T"+strconv.Itoa(ticket+1)+":", tcell.StyleDefault)
 		x += 4
 		for _, char := range ticketStr {
-			s.SetContent(x, 1, char, nil, tcell.StyleDefault.Background(colors[ticket+1]).Foreground(tcell.ColorBlack))
+			s.SetContent(x, 1, char, nil, tcell.StyleDefault.Background(Colors[ticket+1]).Foreground(tcell.ColorBlack))
 			x++
 		}
 	}

@@ -3,6 +3,7 @@ module github.com/furudenipa/diceraceDP/visualiser
 go 1.22.2
 
 require (
+	github.com/furudenipa/diceraceDP v0.0.0-20240927162754-3411b7ac4127
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/gdamore/tcell/v2 v2.7.4
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
