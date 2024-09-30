@@ -2,6 +2,12 @@ package mdpsolver
 
 import "github.com/furudenipa/diceraceDP/config"
 
+// generateCombination は、指定された条件に基づいて数値の組み合わせを生成します。
+// n: 現在の深さ（現在のタプルの長さ）
+// currentSum: 現在のタプルの合計
+// targetSum: 目標とする合計値
+// currentTuple: 現在のタプルのスライス
+// results: 結果を格納する二次元スライスへのポインタ
 func generateCombination(n, currentSum, targetSum int, currentTuple []int, results *[][]int) {
 	if n == 6 {
 		newTuple := make([]int, len(currentTuple))

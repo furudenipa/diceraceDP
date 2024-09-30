@@ -90,6 +90,7 @@ func Run() {
 	fmt.Println("----------end----------")
 }
 
+// maxIndex returns the maximum value and its index from the given values.
 func maxIndex(values ...float64) (float64, int) {
 	if len(values) == 0 {
 		return 0, -1

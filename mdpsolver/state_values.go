@@ -2,6 +2,9 @@ package mdpsolver
 
 import "github.com/furudenipa/diceraceDP/config"
 
+//TODO: 責任の範囲を明確に
+
+// Calculate the value when the action diceroll is selected
 func calcRollValue(
 	step, square int, state []int,
 	prevStateValues *[config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64) float64 {
@@ -23,6 +26,8 @@ func calcRollValue(
 	return v / 6
 }
 
+// Calculate the value when the action ticket_n is selected
+// if use ticket_1, then n = 0
 func calcTicketValue(
 	n, square int, state []int,
 	currentStateValues *[config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64) float64 {
@@ -37,6 +42,7 @@ func calcTicketValue(
 	return v
 }
 
+// Calculate the state value
 func calcStateValue(nextSquare int, state []int, stateValues *[config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64) float64 {
 
 	var sv float64

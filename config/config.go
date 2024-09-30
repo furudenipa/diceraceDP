@@ -17,6 +17,13 @@ const (
 	MIYU   = 0
 	ELEPH  = 50
 )
+const (
+	numOfItemTypes = 5
+)
+
+var ItemsCount = [18]int{
+	0, 10, 20, 17, 5, 32, 15, 22, 8, 7, 12, 24, 0, 16, 12, 10, 6, 4,
+}
 
 var RewardsMap = [18]float64{
 	0,
