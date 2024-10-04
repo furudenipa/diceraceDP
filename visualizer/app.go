@@ -5,8 +5,14 @@ import (
 	"strconv"
 
 	"github.com/furudenipa/diceraceDP/config"
+	"github.com/furudenipa/diceraceDP/reader"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
+)
+
+const (
+	appOffsetX = 6
+	appOffsetY = 4
 )
 
 var Colors = []tcell.Color{
@@ -39,7 +45,7 @@ func (app *App) loading(filepath string) {
 	s.Show()
 
 	// readerを使ってデータを読む
-	app.policy = *reader(filepath)
+	app.policy = *reader.PolicyReader(filepath)
 }
 
 // 画面表示、クリア不要であること
@@ -62,7 +68,7 @@ func (app *App) drawMatrix() {
 		for square := 0; square < config.NumSquares; square++ {
 			var color tcell.Color
 			if step+app.rowIndex < config.NumSteps {
-				idx := getFlatIndex(step+app.rowIndex, square, t1, t2, t3, t4, t5, t6, app.strides)
+				idx := reader.GetFlatIndex(step+app.rowIndex, square, t1, t2, t3, t4, t5, t6, app.strides)
 				value := int(app.policy[idx] % 8)
 				color = Colors[value]
 			} else {
@@ -205,8 +211,3 @@ func (app *App) SetContents(x, y int, text string, style tcell.Style) {
 		x += runewidth.RuneWidth(r)
 	}
 }
-
-const (
-	appOffsetX = 6
-	appOffsetY = 4
-)

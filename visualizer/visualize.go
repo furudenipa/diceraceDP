@@ -1,6 +1,7 @@
 package visualizer
 
 import (
+	"github.com/furudenipa/diceraceDP/reader"
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -20,7 +21,7 @@ func Run(filepath string) {
 		rowIndex:     0,
 		rowViewRange: maxY - 3,
 		ticketIndexs: make([]int, 6),
-		strides:      computeStrides(),
+		strides:      reader.ComputeStrides(),
 	}
 	defer screen.Fini()
 

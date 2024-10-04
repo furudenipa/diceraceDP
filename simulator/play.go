@@ -5,13 +5,13 @@ type Player interface {
 }
 
 type AiPlayer struct {
-	step        int
-	square      int
-	tickets     []int
-	totalReward float64
-	totalItems  []int
-	dummyPolicy []byte
-	// policy
+	remainingRolls   int
+	remainingTickets []int
+	square           int
+	totalReward      float64
+	totalItems       []int
+	policy           []byte
+	strides          []int
 }
 
 func (a *AiPlayer) TakeAction() {
