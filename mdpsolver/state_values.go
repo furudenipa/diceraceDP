@@ -2,23 +2,33 @@ package mdpsolver
 
 import "github.com/furudenipa/diceraceDP/config"
 
-//TODO: 責任の範囲を明確に
+type stateValues struct {
+	stateValues [config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64
+}
+
+func (s *stateValues) GetValue(square int, remainingTickets []int) float64 {
+	return s.stateValues[square][remainingTickets[0]][remainingTickets[1]][remainingTickets[2]][remainingTickets[3]][remainingTickets[4]][remainingTickets[5]]
+}
+
+func (s *stateValues) SetValue(square int, remainingTickets []int, value float64) {
+	s.stateValues[square][remainingTickets[0]][remainingTickets[1]][remainingTickets[2]][remainingTickets[3]][remainingTickets[4]][remainingTickets[5]] = value
+}
 
 // Calculate the value when the action diceroll is selected
 func calcRollValue(
-	step, square int, state []int,
-	prevStateValues *[config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64) float64 {
+	square, remainingRolls int, remainingTickets []int,
+	prevStateValues *stateValues) float64 {
 
 	var v float64
 
-	if step == 0 {
-		return v
+	if remainingRolls == 0 {
+		return float64(-1)
 	}
 
 	var sv float64
 	for i := 1; i <= 6; i++ {
 		nextSquare := (square + i) % config.NumSquares
-		sv += calcStateValue(nextSquare, state, prevStateValues)
+		sv += calcStateValue(nextSquare, remainingTickets, prevStateValues)
 	}
 	v += sv
 	v += config.DiceRewardsMap[square]
@@ -29,36 +39,36 @@ func calcRollValue(
 // Calculate the value when the action ticket_n is selected
 // if use ticket_1, then n = 0
 func calcTicketValue(
-	n, square int, state []int,
-	currentStateValues *[config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64) float64 {
+	n, square int, remainingTickets []int,
+	currentStateValues *stateValues) float64 {
 
-	state[n]--
+	remainingTickets[n]--
 	nextSquare := (square + n + 1) % config.NumSquares
 	var v float64
-	v += calcStateValue(nextSquare, state, currentStateValues)
+	v += calcStateValue(nextSquare, remainingTickets, currentStateValues)
 	v += config.RewardsMap[nextSquare]
-	state[n]++
+	remainingTickets[n]++
 
 	return v
 }
 
 // Calculate the state value
-func calcStateValue(nextSquare int, state []int, stateValues *[config.NumSquares][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets][config.MaxTickets]float64) float64 {
+func calcStateValue(nextSquare int, remainingTickets []int, stateValues *stateValues) float64 {
 
 	var sv float64
 	if nextSquare != config.AdvanceSixSquare && nextSquare != config.TicketSquare {
-		sv += stateValues[nextSquare][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]]
+		sv += stateValues.GetValue(nextSquare, remainingTickets)
 	} else {
 		nextSquare = config.TicketSquare
 		var tmp float64
 		for ticketTpye := 0; ticketTpye < 6; ticketTpye++ {
-			canIncrement := state[ticketTpye] < config.MaxTickets-1
+			canIncrement := remainingTickets[ticketTpye] < config.MaxTickets-1
 			if canIncrement {
-				state[ticketTpye]++
+				remainingTickets[ticketTpye]++
 			}
-			tmp += stateValues[nextSquare][state[0]][state[1]][state[2]][state[3]][state[4]][state[5]]
+			tmp += stateValues.GetValue(nextSquare, remainingTickets)
 			if canIncrement {
-				state[ticketTpye]--
+				remainingTickets[ticketTpye]--
 			}
 		}
 		sv += tmp / 6

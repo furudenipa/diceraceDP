@@ -16,12 +16,12 @@ func Run(filepath string) {
 	}
 	_, maxY := screen.Size()
 	app := &App{
-		screen:       screen,
-		policy:       make([]byte, 10),
-		rowIndex:     0,
-		rowViewRange: maxY - 3,
-		ticketIndexs: make([]int, 6),
-		strides:      reader.ComputeStrides(),
+		screen:           screen,
+		policy:           make([]byte, 10),
+		rowIndex:         0,
+		rowViewRange:     maxY - 3,
+		remainingTickets: make([]int, 6),
+		strides:          reader.ComputeStrides(),
 	}
 	defer screen.Fini()
 
@@ -31,7 +31,7 @@ func Run(filepath string) {
 	if debug {
 		app.showOffset()
 	}
-	app.show()
+	app.render()
 
 	for {
 		ev := screen.PollEvent()
@@ -66,7 +66,7 @@ func Run(filepath string) {
 				case '&':
 					app.decrementTicket(5)
 				}
-				app.show()
+				app.render()
 
 			case tcell.KeyEscape, tcell.KeyCtrlC:
 				// EscapeキーかCtrl-Cでループを終了
@@ -74,18 +74,18 @@ func Run(filepath string) {
 
 			case tcell.KeyDown:
 				app.incrementRowIndex()
-				app.show()
+				app.render()
 
 			case tcell.KeyUp:
 				app.decrementRowIndex()
-				app.show()
+				app.render()
 			}
 
 		case *tcell.EventResize:
 			screen.Sync()
 			_, maxY := screen.Size()
 			app.rowViewRange = maxY - 3
-			app.show()
+			app.render()
 		}
 	}
 }

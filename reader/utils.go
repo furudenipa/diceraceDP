@@ -2,6 +2,7 @@ package reader
 
 import "github.com/furudenipa/diceraceDP/config"
 
+// Powはbaseのexp乗を計算します。
 func Pow(base, exp int) int {
 	result := 1
 	for exp > 0 {
@@ -11,6 +12,7 @@ func Pow(base, exp int) int {
 	return result
 }
 
+// 1次元配列policyのインデックス計算に必要なstridesを計算します。
 func ComputeStrides() []int {
 	strides := make([]int, config.NumDimensions)
 	strides[config.NumDimensions-1] = 1
@@ -22,8 +24,8 @@ func ComputeStrides() []int {
 }
 
 // getFlatIndexは多次元インデックスをフラットインデックスに変換します。
-func GetFlatIndex(step, square, t1, t2, t3, t4, t5, t6 int, strides []int) int {
+func GetFlatIndex(step, square int, remainingTickets []int, strides []int) int {
 	return step*strides[0] + square*strides[1] +
-		t1*strides[2] + t2*strides[3] + t3*strides[4] +
-		t4*strides[5] + t5*strides[6] + t6*strides[7]
+		remainingTickets[0]*strides[2] + remainingTickets[1]*strides[3] + remainingTickets[2]*strides[4] +
+		remainingTickets[3]*strides[5] + remainingTickets[4]*strides[6] + remainingTickets[5]*strides[7]
 }

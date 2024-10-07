@@ -27,12 +27,12 @@ var Colors = []tcell.Color{
 }
 
 type App struct {
-	screen       tcell.Screen
-	policy       []byte
-	rowIndex     int
-	rowViewRange int
-	ticketIndexs []int
-	strides      []int
+	screen           tcell.Screen
+	policy           []byte
+	rowIndex         int
+	rowViewRange     int
+	remainingTickets []int
+	strides          []int
 }
 
 // loading画面の表示とデータの読み込み
@@ -45,11 +45,11 @@ func (app *App) loading(filepath string) {
 	s.Show()
 
 	// readerを使ってデータを読む
-	app.policy = *reader.PolicyReader(filepath)
+	app.policy = *reader.ReadPolicy(filepath)
 }
 
 // 画面表示、クリア不要であること
-func (app *App) show() {
+func (app *App) render() {
 	s := app.screen
 	app.drawRow()
 	app.drawColumn()
@@ -61,16 +61,13 @@ func (app *App) show() {
 
 func (app *App) drawMatrix() {
 
-	// 現在のt1〜t6の値を取得
-	t1, t2, t3, t4, t5, t6 := app.ticketIndexs[0], app.ticketIndexs[1], app.ticketIndexs[2], app.ticketIndexs[3], app.ticketIndexs[4], app.ticketIndexs[5]
-
-	for step := 0; step < app.rowViewRange; step++ {
+	for remainingRolls := 0; remainingRolls < app.rowViewRange; remainingRolls++ {
 		for square := 0; square < config.NumSquares; square++ {
 			var color tcell.Color
-			if step+app.rowIndex < config.NumSteps {
-				idx := reader.GetFlatIndex(step+app.rowIndex, square, t1, t2, t3, t4, t5, t6, app.strides)
-				value := int(app.policy[idx] % 8)
-				color = Colors[value]
+			if remainingRolls+app.rowIndex < config.MaxRolls {
+				idx := reader.GetFlatIndex(remainingRolls+app.rowIndex, square, app.remainingTickets, app.strides)
+				action := int(app.policy[idx])
+				color = Colors[action]
 			} else {
 				color = Colors[7] //policyが計算されていない場合
 			}
@@ -81,7 +78,7 @@ func (app *App) drawMatrix() {
 
 			// スクリーン上の位置を計算
 			x := appOffsetX + square*3
-			y := appOffsetY + step
+			y := appOffsetY + remainingRolls
 
 			// 四角形を描画
 			app.drawSquare(x, y, color)
@@ -119,7 +116,6 @@ func (app *App) drawColumn() {
 			x := appOffsetX + (columnIndex+1)*3 + startX + j // 各桁のx座標を計算
 			s.SetContent(x, y, char, nil, tcell.StyleDefault)
 		}
-
 	}
 }
 
@@ -129,7 +125,7 @@ func (app *App) drawTickets() {
 	offset := appOffsetX + 9
 	x := offset
 	for ticket := 0; ticket < 6; ticket++ {
-		ticketStr := fmt.Sprintf("%d", app.ticketIndexs[ticket])
+		ticketStr := fmt.Sprintf("%d", app.remainingTickets[ticket])
 		app.SetContents(x, 1, " T"+strconv.Itoa(ticket+1)+":", tcell.StyleDefault)
 		x += 4
 		for _, char := range ticketStr {
@@ -177,23 +173,23 @@ func (app *App) drawSquare(x, y int, c tcell.Color) {
 }
 
 func (app *App) incrementTicket(index int) {
-	app.ticketIndexs[index]++
-	if app.ticketIndexs[index] >= config.MaxTickets {
-		app.ticketIndexs[index] = 0
+	app.remainingTickets[index]++
+	if app.remainingTickets[index] >= config.MaxTickets {
+		app.remainingTickets[index] = 0
 	}
 }
 
 func (app *App) decrementTicket(index int) {
-	app.ticketIndexs[index]--
-	if app.ticketIndexs[index] < 0 {
-		app.ticketIndexs[index] = config.MaxTickets - 1
+	app.remainingTickets[index]--
+	if app.remainingTickets[index] < 0 {
+		app.remainingTickets[index] = config.MaxTickets - 1
 	}
 }
 
 func (app *App) incrementRowIndex() {
 	app.rowIndex++
-	if app.rowIndex >= config.NumSteps {
-		app.rowIndex = config.NumSteps
+	if app.rowIndex >= config.MaxRolls {
+		app.rowIndex = config.MaxRolls
 	}
 }
 

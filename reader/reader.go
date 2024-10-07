@@ -8,8 +8,7 @@ import (
 	"github.com/furudenipa/diceraceDP/config"
 )
 
-func PolicyReader(filePath string) *[]byte {
-
+func ReadPolicy(filePath string) *[]byte {
 	// ファイルを開く
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -24,7 +23,7 @@ func PolicyReader(filePath string) *[]byte {
 	}
 
 	// 期待されるデータサイズを計算
-	expectedSize := config.NumSteps * config.NumSquares * Pow(config.MaxTickets, 6)
+	expectedSize := config.MaxRolls * config.NumSquares * Pow(config.MaxTickets, 6)
 	if int64(expectedSize) != fileInfo.Size() {
 		log.Fatalf("ファイルサイズが期待されるサイズ (%d) と一致しません。実際のサイズ: %d", expectedSize, fileInfo.Size())
 	}
