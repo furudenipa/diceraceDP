@@ -2,10 +2,12 @@ package visualizer
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"strconv"
 
 	"github.com/furudenipa/diceraceDP/config"
-	"github.com/furudenipa/diceraceDP/reader"
+	"github.com/furudenipa/diceraceDP/pkg/reader"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 )
@@ -51,6 +53,7 @@ func (app *App) loading(filepath string) {
 // 画面表示、クリア不要であること
 func (app *App) render() {
 	s := app.screen
+	//app.showOffset()
 	app.drawRow()
 	app.drawColumn()
 	app.drawLogo()
@@ -65,7 +68,11 @@ func (app *App) drawMatrix() {
 		for square := 0; square < config.NumSquares; square++ {
 			var color tcell.Color
 			if remainingRolls+app.rowIndex < config.MaxRolls {
-				idx := reader.GetFlatIndex(remainingRolls+app.rowIndex, square, app.remainingTickets, app.strides)
+				idx, err := reader.GetFlatIndex(remainingRolls+app.rowIndex, square, app.remainingTickets, app.strides)
+				if err != nil {
+					slog.Error("Failed to get flat index", slog.String("error", err.Error()))
+					os.Exit(1)
+				}
 				action := int(app.policy[idx])
 				color = Colors[action]
 			} else {
@@ -127,7 +134,7 @@ func (app *App) drawTickets() {
 	for ticket := 0; ticket < 6; ticket++ {
 		ticketStr := fmt.Sprintf("%d", app.remainingTickets[ticket])
 		app.SetContents(x, 1, " T"+strconv.Itoa(ticket+1)+":", tcell.StyleDefault)
-		x += 4
+		x += 4 // len(" T1:") = 4
 		for _, char := range ticketStr {
 			s.SetContent(x, 1, char, nil, tcell.StyleDefault.Background(Colors[ticket+1]).Foreground(tcell.ColorBlack))
 			x++

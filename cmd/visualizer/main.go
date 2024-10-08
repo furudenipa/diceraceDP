@@ -1,7 +1,7 @@
 package main
 
-import "github.com/furudenipa/diceraceDP/visualizer"
+import "github.com/furudenipa/diceraceDP/pkg/visualizer"
 
 func main() {
-	visualizer.Run("./data/policy3.bin")
+	visualizer.Run("../../data/policy3.bin")
 }

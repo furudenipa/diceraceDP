@@ -1,7 +1,9 @@
 package visualizer
 
 import (
-	"github.com/furudenipa/diceraceDP/reader"
+	"log/slog"
+
+	"github.com/furudenipa/diceraceDP/pkg/reader"
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -9,17 +11,20 @@ func Run(filepath string) {
 
 	screen, err := tcell.NewScreen()
 	if err != nil {
-		panic(err)
+		slog.Error("Failed to create new screen", slog.String("error", err.Error()))
+		return
 	}
 	if err := screen.Init(); err != nil {
-		panic(err)
+		slog.Error("Failed to initialize screen", slog.String("error", err.Error()))
+		return
+
 	}
 	_, maxY := screen.Size()
 	app := &App{
 		screen:           screen,
-		policy:           make([]byte, 10),
+		policy:           make([]byte, 0),
 		rowIndex:         0,
-		rowViewRange:     maxY - 3,
+		rowViewRange:     maxY - appOffsetY,
 		remainingTickets: make([]int, 6),
 		strides:          reader.ComputeStrides(),
 	}
@@ -27,10 +32,6 @@ func Run(filepath string) {
 
 	app.loading(filepath)
 
-	var debug = false
-	if debug {
-		app.showOffset()
-	}
 	app.render()
 
 	for {
@@ -84,7 +85,7 @@ func Run(filepath string) {
 		case *tcell.EventResize:
 			screen.Sync()
 			_, maxY := screen.Size()
-			app.rowViewRange = maxY - 3
+			app.rowViewRange = maxY - appOffsetY
 			app.render()
 		}
 	}

@@ -2,37 +2,42 @@ package reader
 
 import (
 	"io"
-	"log"
+	"log/slog"
 	"os"
 
 	"github.com/furudenipa/diceraceDP/config"
 )
 
+// 指定されたファイルからpolicyを読み込む。
+// configで設定されているサイズと一致する必要があります。
 func ReadPolicy(filePath string) *[]byte {
 	// ファイルを開く
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("ファイルを開く際にエラーが発生しました: %v", err)
+		slog.Error("Failed to open file", slog.String("error", err.Error()))
+		os.Exit(1)
 	}
 	defer file.Close()
 
 	// ファイル情報を取得
 	fileInfo, err := file.Stat()
 	if err != nil {
-		log.Fatalf("ファイル情報を取得できませんでした: %v", err)
+		slog.Error("Failed to get file information", slog.String("error", err.Error()))
+		os.Exit(1)
 	}
 
 	// 期待されるデータサイズを計算
 	expectedSize := config.MaxRolls * config.NumSquares * Pow(config.MaxTickets, 6)
 	if int64(expectedSize) != fileInfo.Size() {
-		log.Fatalf("ファイルサイズが期待されるサイズ (%d) と一致しません。実際のサイズ: %d", expectedSize, fileInfo.Size())
+		slog.Error("File size does not match the expected size", slog.Int("expectedSize", expectedSize), slog.Int64("actualSize", fileInfo.Size()))
+		os.Exit(1)
 	}
 
 	// データを一度に読み込む
 	data := make([]byte, expectedSize)
 	_, err = io.ReadFull(file, data)
 	if err != nil {
-		log.Fatalf("ファイルを読み込む際にエラーが発生しました: %v", err)
+		slog.Error("Failed to read file", slog.String("error", err.Error()))
 	}
 
 	return &data
