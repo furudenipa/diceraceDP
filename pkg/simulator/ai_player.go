@@ -8,7 +8,7 @@ import (
 
 type AiPlayer struct {
 	*BasePlayer
-	strides []int
+	strides *[]int
 	policy  *[]byte // Example policy to determine actions
 }
 
@@ -16,7 +16,7 @@ func (ap *AiPlayer) TakeAction() (byte, bool) {
 	if ap.IsEnd() {
 		return 7, false
 	}
-	idx, err := reader.GetFlatIndex(ap.remainingRolls, ap.square, ap.remainingTickets, ap.strides)
+	idx, err := reader.GetFlatIndex(ap.remainingRolls, ap.square, ap.remainingTickets, *ap.strides)
 	if err != nil {
 		slog.Error("Failed to get flat index", slog.String("error", err.Error()))
 		return 7, false
@@ -30,12 +30,14 @@ func (ap *AiPlayer) TakeAction() (byte, bool) {
 // Clone returns a deep copy of the player
 // Clone id made by NewAiPlayer(BasePlayer.Clone(), stridesCopy, policy)
 func (ap *AiPlayer) Clone() Player {
-	stridesCopy := make([]int, len(ap.strides))
-	copy(stridesCopy, ap.strides)
-	return NewAiPlayer(ap.BasePlayer.Clone(), stridesCopy, ap.policy)
+	return &AiPlayer{
+		BasePlayer: ap.BasePlayer.Clone(),
+		strides:    ap.strides,
+		policy:     ap.policy,
+	}
 }
 
-func NewAiPlayer(basePlayer *BasePlayer, strides []int, policy *[]byte) *AiPlayer {
+func NewAiPlayer(basePlayer *BasePlayer, strides *[]int, policy *[]byte) *AiPlayer {
 	return &AiPlayer{
 		BasePlayer: basePlayer,
 		strides:    strides,

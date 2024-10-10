@@ -11,13 +11,22 @@ import (
 	"github.com/furudenipa/diceraceDP/pkg/stats"
 )
 
+// TODO: メモリ使用量がbinの2倍に膨れる メモリプロファイル解析
 func main() {
 	iterate := 10000000
 	numWorkers := runtime.NumCPU()
 
+	players := createPlayers()
+	names := []string{"Random", "Custom", "Policy"}
+
+	for idx, player := range players {
+		runSimulation(player, names[idx], iterate, numWorkers)
+	}
+}
+
+func createPlayers() []simulator.Player {
 	strides := reader.ComputeStrides()
 	policyPointer := reader.ReadPolicy("../../data/policy3.bin")
-
 	player1 := simulator.NewRandomPlayer(
 		simulator.NewBasePlayer(
 			99,
@@ -39,86 +48,50 @@ func main() {
 			[]int{1, 1, 1, 1, 1, 1},
 			0,
 		),
-		strides,
+		&strides,
 		policyPointer,
 	)
+	return []simulator.Player{player1, player2, player3}
+}
 
-	players := []simulator.Player{player1, player2, player3}
-	names := []string{"Random", "Custom", "Policy"}
-
-	for idx, player := range players {
-		s := time.Now()
-
-		rewardsChan := make(chan float64, numWorkers*100)
-		var wg sync.WaitGroup
-		stats := stats.Stats{}
-
-		// consume rewards from the channel
-		go func() {
-			for reward := range rewardsChan {
-				stats.Add(reward)
-			}
-		}()
-
-		// worker function
-		worker := func(player simulator.Player, iterations int) {
-			defer wg.Done()
-			for i := 0; i < iterations; i++ {
-				reward, _ := simulator.RunSimulation(player)
-				rewardsChan <- reward
-			}
-		}
-
-		simulationsPerWorker := iterate / numWorkers
-		remainingSimulations := iterate % numWorkers
-		fmt.Printf("Running %d simulations using %d workers\n", iterate, numWorkers)
-		for i := 0; i < numWorkers; i++ {
-			sims := simulationsPerWorker
-			if i == numWorkers-1 {
-				sims += remainingSimulations
-			}
-			wg.Add(1)
-			go worker(player.Clone(), sims)
-		}
-
-		go func() {
-			wg.Wait()
-			close(rewardsChan)
-		}()
-
-		wg.Wait()
-
-		// 集計結果を表示
-		fmt.Println()
-		fmt.Printf("PlayerName: %s\n", names[idx])
-		fmt.Printf(" Mean Reward: %f\n", stats.Mean())
-		fmt.Printf(" Variance: %f\n", stats.Variance())
-		fmt.Printf(" Standard Deviation: %f\n", stats.StdDev())
-		fmt.Printf(" Time: %s\n", time.Since(s))
+func runWorker(player simulator.Player, iterations int, rewardsChan chan<- float64, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for i := 0; i < iterations; i++ {
+		reward, _ := simulator.PlayOut(player)
+		rewardsChan <- reward
 	}
 }
 
-/*
-func _hoge() {
+func runSimulation(player simulator.Player, name string, iterations int, numWorkers int) {
+	s := time.Now()
 
-	fmt.Println("--------Start simulation--------")
-	for n, player := range players {
-		avgRewrad := 0.0
-		s := time.Now()
-		for i := 0; i < iterate; i++ {
-			player.Reset()
-			for {
-				_, ok := player.TakeAction()
-				if !ok {
-					break
-				}
-			}
-			avgRewrad += player.GetTotalReward()
+	rewardsChan := make(chan float64, numWorkers*100)
+	var wg sync.WaitGroup
+	stats := stats.Stats{}
+
+	go func() {
+		for reward := range rewardsChan {
+			stats.Add(reward)
 		}
-		avgRewrad /= float64(iterate)
-		fmt.Println("PlayerName:", names[n], "  Average reward:", avgRewrad)
-		fmt.Println(" Time:", time.Since(s))
+	}()
+
+	simulationsPerWorker := iterations / numWorkers
+	remainingSimulations := iterations % numWorkers
+
+	for i := 0; i < numWorkers; i++ {
+		sims := simulationsPerWorker
+		if i == numWorkers-1 {
+			sims += remainingSimulations
+		}
+		wg.Add(1)
+		go runWorker(player.Clone(), sims, rewardsChan, &wg)
 	}
-	fmt.Println("----------End simulation--------")
+
+	wg.Wait()
+	close(rewardsChan)
+
+	fmt.Println("-----------------------------Player Statistics------------------------------------")
+	fmt.Printf("%-15s %-15s %-15s %-15s %-15s\n", "PlayerName", "Mean Reward", "Variance", "Std Dev", "Time")
+	fmt.Printf("%-15s %-15.2f %-15.2f %-15.2f %-15s\n", name, stats.Mean(), stats.Variance(), stats.StdDev(), time.Since(s))
+	fmt.Println("----------------------------------------------------------------------------------")
 }
-*/

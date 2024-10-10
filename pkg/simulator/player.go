@@ -9,7 +9,7 @@ type Player interface {
 	Clone() Player
 }
 
-func RunSimulation(player Player) (float64, map[string]int) {
+func PlayOut(player Player) (float64, map[string]int) {
 	player.Reset()
 	for {
 		_, ok := player.TakeAction()
