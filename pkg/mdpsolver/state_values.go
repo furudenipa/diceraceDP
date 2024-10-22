@@ -31,7 +31,7 @@ func calcRollValue(
 		sv += calcStateValue(nextSquare, remainingTickets, prevStateValues)
 	}
 	v += sv
-	v += config.DiceRewardsMap[square]
+	v += config.ExpRewards[square]
 
 	return v / 6
 }
@@ -46,7 +46,7 @@ func calcTicketValue(
 	nextSquare := (square + n + 1) % config.NumSquares
 	var v float64
 	v += calcStateValue(nextSquare, remainingTickets, currentStateValues)
-	v += config.RewardsMap[nextSquare]
+	v += config.Rewards[nextSquare]
 	remainingTickets[n]++
 
 	return v

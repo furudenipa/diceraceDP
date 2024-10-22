@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	github.com/gdamore/tcell/v2 v2.7.4
 	github.com/mattn/go-runewidth v0.0.16
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

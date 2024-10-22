@@ -1,0 +1,37 @@
+cells:
+  - item: none
+    count: 0
+  - item: stone
+    count: 10
+  - item: credit
+    count: 20
+  - item: report
+    count: 17
+  - item: miyu
+    count: 5
+  - item: credit
+    count: 32
+  - item: stone
+    count: 15
+  - item: report
+    count: 22
+  - item: eleph
+    count: 8
+  - item: miyu
+    count: 7
+  - item: eleph
+    count: 12
+  - item: credit
+    count: 24
+  - item: none
+    count: 0
+  - item: credit
+    count: 16
+  - item: stone
+    count: 12
+  - item: report
+    count: 10
+  - item: eleph
+    count: 6
+  - item: miyu
+    count: 4

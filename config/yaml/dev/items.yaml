@@ -1,0 +1,13 @@
+items:
+  none:
+    reward: 0
+  stone:
+    reward: 4.3
+  credit:
+    reward: 13.5
+  report:
+    reward: 4
+  miyu:
+    reward: 0
+  eleph:
+    reward: 50

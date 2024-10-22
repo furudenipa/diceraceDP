@@ -50,9 +50,9 @@ func (bp *BasePlayer) move(action byte) {
 		bp.remainingTickets[i] = min(bp.remainingTickets[i]+1, config.MaxTickets-1)
 	}
 
-	item := config.ItemsList[bp.square]
-	bp.totalReward += item.Reward
-	bp.totalItems[item.Name] += item.Count
+	itemName := (config.C.Cells)[bp.square].Item
+	bp.totalReward += config.I.Items[itemName].Reward
+	bp.totalItems[itemName] += (config.C.Cells)[bp.square].Count
 }
 
 func (bp *BasePlayer) IsEnd() bool {
