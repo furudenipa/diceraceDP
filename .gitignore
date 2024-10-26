@@ -4,7 +4,9 @@ data/
 # .bin拡張子のファイルを無視
 *.bin
 
-# misc
-misc/
+# archive
+archive/
 
+# vscode
 .vscode/
+

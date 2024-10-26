@@ -51,8 +51,9 @@ func (bp *BasePlayer) move(action byte) {
 	}
 
 	itemName := (config.C.Cells)[bp.square].Item
-	bp.totalReward += config.I.Items[itemName].Reward
-	bp.totalItems[itemName] += (config.C.Cells)[bp.square].Count
+	itemCount := (config.C.Cells)[bp.square].Count
+	bp.totalReward += config.Rewards[bp.square]
+	bp.totalItems[itemName] += itemCount
 }
 
 func (bp *BasePlayer) IsEnd() bool {
