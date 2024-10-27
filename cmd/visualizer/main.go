@@ -1,7 +1,15 @@
 package main
 
-import "github.com/furudenipa/diceraceDP/pkg/visualizer"
+import (
+	"os"
+
+	"github.com/furudenipa/diceraceDP/pkg/visualizer"
+)
 
 func main() {
-	visualizer.Run("../../data/policy3.bin")
+	policyFilePath := "../../data/policy3.bin"
+	if len(os.Args) > 1 {
+		policyFilePath = os.Args[1]
+	}
+	visualizer.Run(policyFilePath)
 }

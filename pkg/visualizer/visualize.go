@@ -22,6 +22,7 @@ func Run(filepath string) {
 	_, maxY := screen.Size()
 	app := &App{
 		screen:           screen,
+		filepath:         filepath,
 		policy:           make([]byte, 0),
 		rowIndex:         0,
 		rowViewRange:     maxY - appOffsetY,
@@ -30,8 +31,9 @@ func Run(filepath string) {
 	}
 	defer screen.Fini()
 
-	app.loading(filepath)
+	app.loading()
 
+	app.drawFilepath()
 	app.render()
 
 	for {

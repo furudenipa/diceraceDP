@@ -77,9 +77,9 @@ func Run(filename string) {
 			}
 		}
 
-		fmt.Println(" !currentStateValues[0][1][1][1][1][1][1]:", currentStateValues.GetValue(0, []int{1, 1, 1, 1, 1, 1}))
-		fmt.Println(" !prevStateValues[0][1][1][1][1][1][1]:", prevStateValues.GetValue(0, []int{1, 1, 1, 1, 1, 1}))
-		fmt.Println(" currentStateValues[0][1][1][1][0][0][0]:", currentStateValues.GetValue(0, []int{1, 1, 1, 0, 0, 0}))
+		// fmt.Println(" !currentStateValues[0][1][1][1][1][1][1]:", currentStateValues.GetValue(0, []int{1, 1, 1, 1, 1, 1}))
+		// fmt.Println(" !prevStateValues[0][1][1][1][1][1][1]:", prevStateValues.GetValue(0, []int{1, 1, 1, 1, 1, 1}))
+		// fmt.Println(" currentStateValues[0][1][1][1][0][0][0]:", currentStateValues.GetValue(0, []int{1, 1, 1, 0, 0, 0}))
 		prevStateValues = currentStateValues // stateValuesのコピー, 配列型は値渡し
 
 		// Write policy to file

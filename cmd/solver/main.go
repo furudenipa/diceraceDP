@@ -1,7 +1,18 @@
 package main
 
-import "github.com/furudenipa/diceraceDP/pkg/mdpsolver"
+import (
+	"fmt"
+	"os"
+
+	"github.com/furudenipa/diceraceDP/pkg/mdpsolver"
+)
 
 func main() {
-	mdpsolver.Run("../../data/policy_.bin")
+	policyFilePath := "../../data/policy_.bin"
+	if len(os.Args) > 1 {
+		policyFilePath = os.Args[1]
+	}
+
+	fmt.Printf("Save to: %s\n", policyFilePath)
+	mdpsolver.Run(policyFilePath)
 }

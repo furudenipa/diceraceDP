@@ -30,6 +30,7 @@ var Colors = []tcell.Color{
 
 type App struct {
 	screen           tcell.Screen
+	filepath         string
 	policy           []byte
 	rowIndex         int
 	rowViewRange     int
@@ -38,16 +39,17 @@ type App struct {
 }
 
 // loading画面の表示とデータの読み込み
-func (app *App) loading(filepath string) {
+func (app *App) loading() {
 	s := app.screen
 	s.Clear()
 
 	// loading画面の表示
 	app.SetContents(appOffsetX, appOffsetY, "Loading...", tcell.StyleDefault)
+	app.SetContents(appOffsetX, appOffsetY+1, "from: "+app.filepath, tcell.StyleDefault)
 	s.Show()
 
 	// readerを使ってデータを読む
-	app.policy = *reader.ReadPolicy(filepath)
+	app.policy = *reader.ReadPolicy(app.filepath)
 }
 
 // 画面表示、クリア不要であること
@@ -146,6 +148,10 @@ func (app *App) drawLogo() {
 	app.SetContents(2, 0, "Dice", tcell.StyleDefault.Foreground(tcell.ColorBlue))
 	app.SetContents(6, 0, "Race", tcell.StyleDefault.Foreground(tcell.ColorWhite))
 	app.SetContents(2, 1, "Visualiser", tcell.StyleDefault.Foreground(tcell.GetColor("#D0D0D0")))
+}
+
+func (app *App) drawFilepath() {
+	app.SetContents(appOffsetX+10, 0, "From: "+app.filepath, tcell.StyleDefault)
 }
 
 func (app *App) showOffset() {
