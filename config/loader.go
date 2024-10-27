@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"slices"
 
@@ -33,11 +33,11 @@ type Cell struct {
 func ReadYaml(filepath string, data interface{}) {
 	dataBytes, err := os.ReadFile(filepath)
 	if err != nil {
-		log.Fatalf("%sの読み込み中にエラーが発生しました: %v", filepath, err)
+		slog.Error("%sの読み込み中にエラーが発生しました: %v", filepath, err)
 	}
 	err = yaml.Unmarshal(dataBytes, data)
 	if err != nil {
-		log.Fatalf("%sのパース中にエラーが発生しました: %v", filepath, err)
+		slog.Error("%sのパース中にエラーが発生しました: %v", filepath, err)
 	}
 }
 
@@ -70,17 +70,24 @@ func configValidation(items *Items, cells *Cells) error {
 	return nil
 }
 
-func LoadConfig() (*Items, *Cells) {
+func LoadConfig(itemsPath, cellsPath string) (*Items, *Cells) {
 	// items.yamlを読み込む
+	if itemsPath == "" {
+		itemsPath = "../../config/yaml/dev/items.yaml"
+	}
 	var items Items
-	ReadYaml("../../config/yaml/dev/items.yaml", &items)
+	ReadYaml(itemsPath, &items)
 
 	// cells.yamlを読み込む
+	if cellsPath == "" {
+		cellsPath = "../../config/yaml/dev/cells.yaml"
+	}
 	var cells Cells
-	ReadYaml("../../config/yaml/dev/cells.yaml", &cells)
+	ReadYaml(cellsPath, &cells)
 
 	if err := configValidation(&items, &cells); err != nil {
-		log.Fatalf("設定ファイルの検証中にエラーが発生しました: %v", err)
+		slog.Error("設定ファイルの検証中にエラーが発生しました: %v", slog.String("error", err.Error()))
+		os.Exit(1)
 	}
 
 	return &items, &cells

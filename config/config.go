@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log/slog"
 	"os"
 )
 
@@ -32,8 +32,8 @@ var C Cells
 var Rewards []float64
 var ExpRewards []float64
 
-func SetConfig() {
-	tmpI, tmpC := LoadConfig()
+func SetConfig(itemsPath, cellsPath string) {
+	tmpI, tmpC := LoadConfig(itemsPath, cellsPath)
 	I = *tmpI
 	C = *tmpC
 	Rewards = *makeRewards(tmpI, tmpC)
@@ -43,12 +43,11 @@ func SetConfig() {
 func init() {
 	dir, err := os.Getwd()
 	if err != nil {
-		fmt.Println("Error getting current working directory:", err)
-		return
+		slog.Error("Error getting current working directory: " + err.Error())
+		os.Exit(1)
 	}
-	fmt.Println("Current working directory:", dir)
-
-	SetConfig()
+	slog.Info("Current working directory: " + dir)
+	SetConfig("", "")
 }
 
 // type ItemInfo struct {
