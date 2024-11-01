@@ -26,7 +26,7 @@ func main() {
 
 func createPlayers() []simulator.Player {
 	strides := reader.ComputeStrides()
-	policyPointer := reader.ReadPolicy("../../data/policy3.bin")
+	policyPointer := reader.ReadPolicy("./data/policy3.bin")
 	player1 := simulator.NewRandomPlayer(
 		simulator.NewBasePlayer(
 			99,

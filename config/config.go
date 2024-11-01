@@ -3,6 +3,8 @@ package config
 import (
 	"log/slog"
 	"os"
+	"path/filepath"
+	"runtime"
 )
 
 const (
@@ -32,6 +34,28 @@ var C Cells
 var Rewards []float64
 var ExpRewards []float64
 
+func getConfigPath() string {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		slog.Error("Error getting current file path")
+		os.Exit(1)
+	}
+	dir := filepath.Dir(filename)
+	projectRoot := filepath.Join(dir, "../")
+	env := os.Getenv("DICERACE_CONFIG")
+
+	var configDir string
+	switch env {
+	case "test":
+		configDir = "config/yaml/test"
+	default:
+		configDir = "config/yaml/dev"
+	}
+
+	configPath := filepath.Join(projectRoot, configDir)
+	return configPath
+}
+
 func SetConfig(itemsPath, cellsPath string) {
 	tmpI, tmpC := LoadConfig(itemsPath, cellsPath)
 	I = *tmpI
@@ -47,7 +71,12 @@ func init() {
 		os.Exit(1)
 	}
 	slog.Info("Current working directory: " + dir)
-	SetConfig("", "")
+
+	configPath := getConfigPath()
+	SetConfig(
+		filepath.Join(configPath, "items.yaml"),
+		filepath.Join(configPath, "cells.yaml"),
+	)
 }
 
 // type ItemInfo struct {

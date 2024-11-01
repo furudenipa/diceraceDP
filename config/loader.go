@@ -73,14 +73,14 @@ func configValidation(items *Items, cells *Cells) error {
 func LoadConfig(itemsPath, cellsPath string) (*Items, *Cells) {
 	// items.yamlを読み込む
 	if itemsPath == "" {
-		itemsPath = "../../config/yaml/dev/items.yaml"
+		itemsPath = "./config/yaml/dev/items.yaml"
 	}
 	var items Items
 	ReadYaml(itemsPath, &items)
 
 	// cells.yamlを読み込む
 	if cellsPath == "" {
-		cellsPath = "../../config/yaml/dev/cells.yaml"
+		cellsPath = "./config/yaml/dev/cells.yaml"
 	}
 	var cells Cells
 	ReadYaml(cellsPath, &cells)

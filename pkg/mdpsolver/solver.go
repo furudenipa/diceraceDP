@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/furudenipa/diceraceDP/config"
 )
@@ -18,6 +19,14 @@ func Run(filename string) {
 	var currentStateValues stateValues
 	var prevStateValues stateValues
 	var policy policy
+
+	dir := filepath.Dir(filename)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err := os.MkdirAll(dir, 0755)
+		if err != nil {
+			fmt.Println("Error creating directory:", err)
+		}
+	}
 
 	file, err := os.Create(filename)
 	if err != nil {

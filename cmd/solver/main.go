@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	policyFilePath := "../../data/policy_.bin"
+	policyFilePath := "./data/policy_.bin"
 	if len(os.Args) > 1 {
 		policyFilePath = os.Args[1]
 	}
