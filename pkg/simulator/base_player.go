@@ -57,7 +57,13 @@ func (bp *BasePlayer) move(action byte) {
 }
 
 func (bp *BasePlayer) IsEnd() bool {
-	return bp.remainingRolls == 0 && bp.remainingTickets[0] == 0 && bp.remainingTickets[1] == 0 && bp.remainingTickets[2] == 0 && bp.remainingTickets[3] == 0 && bp.remainingTickets[4] == 0 && bp.remainingTickets[5] == 0
+	return bp.remainingRolls == 0 &&
+		bp.remainingTickets[0] == 0 &&
+		bp.remainingTickets[1] == 0 &&
+		bp.remainingTickets[2] == 0 &&
+		bp.remainingTickets[3] == 0 &&
+		bp.remainingTickets[4] == 0 &&
+		bp.remainingTickets[5] == 0
 }
 
 func (bp *BasePlayer) Reset() {

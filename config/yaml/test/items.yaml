@@ -1,4 +1,6 @@
 items:
+  none:
+    reward: 0
   stone:
     reward: 4.3
   credit:

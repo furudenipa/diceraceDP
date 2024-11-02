@@ -7,15 +7,8 @@ import (
 	"github.com/furudenipa/diceraceDP/config"
 )
 
-// テストの初期化時に設定をリセットするためのセットアップ関数
-func setupTestConfig(t *testing.T) {
-	t.Log("../../config/yaml/test/items.yaml")
-	config.SetConfig("../../config/yaml/test/items.yaml", "../../config/yaml/test/cells.yaml")
-}
-
 func TestGenerateCombination(t *testing.T) {
-	setupTestConfig(t)
-	t.Log("load")
+	config.SetTestConfig()
 	tests := []struct {
 		name         string
 		n            int
@@ -103,13 +96,25 @@ func TestGenerateCombination(t *testing.T) {
 				{1, 0, 0, 1, 0, 2},
 				{1, 0, 0, 1, 1, 1},
 				{1, 0, 0, 1, 2, 0},
-				// さらに必要に応じて追加
+				{1, 0, 0, 2, 0, 1},
+				{1, 0, 0, 2, 1, 0},
+				{1, 0, 0, 3, 0, 0},
+				{1, 0, 1, 0, 0, 2},
+				{1, 0, 1, 0, 1, 1},
+				{1, 0, 1, 0, 2, 0},
+				{1, 0, 1, 1, 0, 1},
+				{1, 0, 1, 1, 1, 0},
+				{1, 0, 1, 2, 0, 0},
+				{1, 0, 2, 0, 0, 1},
+				{1, 0, 2, 0, 1, 0},
+				{1, 0, 2, 1, 0, 0},
+				{1, 0, 3, 0, 0, 0},
 			},
 		},
 		{
 			name:         "目標合計に達する組み合わせ",
 			n:            5,
-			currentSum:   2,
+			currentSum:   0,
 			targetSum:    2,
 			currentTuple: []int{0, 0, 0, 0, 0},
 			expected: [][]int{
